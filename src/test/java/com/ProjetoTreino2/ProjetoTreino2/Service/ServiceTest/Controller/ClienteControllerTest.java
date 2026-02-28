@@ -6,9 +6,10 @@ import com.ProjetoTreino2.ProjetoTreino2.dto.ClienteDTO;
 import com.ProjetoTreino2.ProjetoTreino2.dto.ClienteResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class ClienteControllerTest {
 
     @Mock
@@ -30,7 +32,6 @@ class ClienteControllerTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
         clienteDTO = new ClienteDTO();
         clienteDTO.setNome("João Silva");
         clienteDTO.setEmail("joao@email.com");
@@ -42,33 +43,34 @@ class ClienteControllerTest {
     }
 
     @Test
-    void testPostMethodName_Success() {
-        ResponseEntity<String> response = clienteController.postMethodName(clienteDTO);
+    void testCreate_Success() {
+        ResponseEntity<String> response = clienteController.create(clienteDTO);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Cliente criado com sucesso!", response.getBody());
-        verify(clienteService, times(1)).CriarCliente(clienteDTO);
+        verify(clienteService, times(1)).create(clienteDTO);
     }
 
     @Test
-    void testPostMethodName_Error() {
-        doThrow(new RuntimeException("Erro na criação")).when(clienteService).CriarCliente(any());
-        ResponseEntity<String> response = clienteController.postMethodName(clienteDTO);
+    void testCreate_Error() {
+        doThrow(new RuntimeException("Erro na criação")).when(clienteService).create(any());
+
+        ResponseEntity<String> response = clienteController.create(clienteDTO);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains("Erro ao criar cliente"));
+        assertTrue(response.getBody().contains("Erro na criação"));
     }
 
     @Test
     void testAtualizar_Success() {
-        ResponseEntity<String> response = clienteController.atualizar(clienteDTO, 1L);
+        ResponseEntity<String> response = clienteController.update(clienteDTO, 1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Cliente atualizado com sucesso!", response.getBody());
-        verify(clienteService, times(1)).Atualizar(clienteDTO, 1L);
+        verify(clienteService, times(1)).update(clienteDTO, 1L);
     }
 
     @Test
     void testAtualizar_Error() {
-        doThrow(new RuntimeException("Erro na atualização")).when(clienteService).Atualizar(any(), anyLong());
-        ResponseEntity<String> response = clienteController.atualizar(clienteDTO, 1L);
+        doThrow(new RuntimeException("Erro na atualização")).when(clienteService).update(any(), anyLong());
+        ResponseEntity<String> response = clienteController.update(clienteDTO, 1L);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertTrue(response.getBody().contains("Erro ao atualizar cliente"));
     }
@@ -76,49 +78,49 @@ class ClienteControllerTest {
     @Test
     void testListarClientes_Success() {
         List<ClienteResponseDTO> listaMock = Arrays.asList(clienteResponseDTO);
-        when(clienteService.ListarClientes()).thenReturn(listaMock);
-        ResponseEntity<List<ClienteResponseDTO>> response = clienteController.ListarClientes();
+        when(clienteService.findAll()).thenReturn(listaMock);
+        ResponseEntity<List<ClienteResponseDTO>> response = clienteController.findAll();
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        verify(clienteService, times(1)).ListarClientes();
+        verify(clienteService, times(1)).findAll();
     }
 
     @Test
     void testListarClientes_Error() {
-        when(clienteService.ListarClientes()).thenThrow(new RuntimeException("Erro ao listar"));
-        ResponseEntity<List<ClienteResponseDTO>> response = clienteController.ListarClientes();
+        when(clienteService.findAll()).thenThrow(new RuntimeException("Erro ao listar"));
+        ResponseEntity<List<ClienteResponseDTO>> response = clienteController.findAll();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNull(response.getBody());
     }
 
     @Test
     void testDeletar_Success() {
-        ResponseEntity<String> response = clienteController.deletar(1L);
+        ResponseEntity<String> response = clienteController.delete(1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Cliente deletado com sucesso!", response.getBody());
-        verify(clienteService, times(1)).Deletar(1L);
+        verify(clienteService, times(1)).delete(1L);
     }
 
     @Test
     void testDeletar_Error() {
-        doThrow(new RuntimeException("Erro ao deletar")).when(clienteService).Deletar(anyLong());
-        ResponseEntity<String> response = clienteController.deletar(1L);
+        doThrow(new RuntimeException("Erro ao deletar")).when(clienteService).delete(anyLong());
+        ResponseEntity<String> response = clienteController.delete(1L);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertTrue(response.getBody().contains("Erro ao deletar cliente"));
     }
 
     @Test
     void testFindById_Success() {
-        when(clienteService.FindById(1L)).thenReturn(clienteResponseDTO);
+        when(clienteService.findById(1L)).thenReturn(clienteResponseDTO);
         ResponseEntity<ClienteResponseDTO> response = clienteController.findById(1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("João Silva", response.getBody().getNome());
-        verify(clienteService, times(1)).FindById(1L);
+        verify(clienteService, times(1)).findById(1L);
     }
 
     @Test
     void testFindById_Error() {
-        when(clienteService.FindById(anyLong())).thenThrow(new RuntimeException("Cliente não encontrado"));
+        when(clienteService.findById(anyLong())).thenThrow(new RuntimeException("Cliente não encontrado"));
         ResponseEntity<ClienteResponseDTO> response = clienteController.findById(999L);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNull(response.getBody());

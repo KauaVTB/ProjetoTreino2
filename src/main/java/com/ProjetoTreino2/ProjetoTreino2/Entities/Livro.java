@@ -1,5 +1,6 @@
 package com.ProjetoTreino2.ProjetoTreino2.Entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,9 +37,9 @@ public class Livro {
     @JoinColumn(name = "autor_id")
     private Autor autor;
 
-    // Talvez seja melhor fazer a conexão contraria, com o joinTable em clientes
     @ManyToMany
     @JoinTable(name = "cliente_livro", joinColumns = @JoinColumn(name = "livro_id"), inverseJoinColumns = @JoinColumn(name = "cliente_id"))
-    private List<Cliente> clientes;
+    private List<Cliente> clientes = new ArrayList<>();
+
 
 }

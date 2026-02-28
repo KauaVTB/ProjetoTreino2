@@ -1,6 +1,5 @@
 package com.ProjetoTreino2.ProjetoTreino2.Controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,46 +15,50 @@ import com.ProjetoTreino2.ProjetoTreino2.dto.AutorDTO;
 import org.springframework.web.bind.annotation.PathVariable;
 import com.ProjetoTreino2.ProjetoTreino2.dto.AutorResponseDTO;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api/autores")
 public class AutorController {
-    @Autowired
-    AutorService autorService;
+    
+    private final AutorService autorService;
 
-    @PostMapping("/criar")
-    public ResponseEntity<String> criar(@RequestBody AutorDTO autorDTO) {
-        try {
-            autorService.CriarAutor(autorDTO);
-            return ResponseEntity.ok().body("Autor criado com sucesso!");
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Erro ao criar autor: " + e.getMessage());
-        }
+    public AutorController(AutorService autorService) {
+        this.autorService = autorService;
     }
 
-    @PutMapping("atualizar/{id}")
-    public ResponseEntity<String> atualizar(@RequestBody AutorDTO autorDTO, @PathVariable Long id) {
+    @PostMapping("/create")
+    public ResponseEntity<String> create(@Valid @RequestBody AutorDTO autorDTO) {
+
+            autorService.create(autorDTO);
+            return ResponseEntity.ok().body("Autor criado com sucesso!");
+       
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> update(@Valid @RequestBody AutorDTO autorDTO, @PathVariable Long id) {
         try {
-            autorService.Atualizar(autorDTO, id);
+            autorService.update(autorDTO, id);
             return ResponseEntity.ok().body("Autor atualizado com sucesso!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erro ao atualizar autor: " + e.getMessage());
         }
     }
 
-    @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> deletar(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         try {
-            autorService.Deletar(id);
+            autorService.delete(id);
             return ResponseEntity.ok().body("Autor deletado com sucesso!");
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Erro ao deletar autor: " + e.getMessage());
         }
     }
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<AutorResponseDTO>> listarAutores() {
+    @GetMapping("/findAll")
+    public ResponseEntity<List<AutorResponseDTO>> findAll() {
         try {
-            List<AutorResponseDTO> lista = this.autorService.listarAutores();
+            List<AutorResponseDTO> lista = this.autorService.findAll();
             return new ResponseEntity<>(lista, org.springframework.http.HttpStatus.OK);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
@@ -64,12 +67,9 @@ public class AutorController {
 
     @GetMapping("/findById/{id}")
     public ResponseEntity<AutorResponseDTO> findById(@PathVariable Long id) {
-        try {
+        
             AutorResponseDTO autor = autorService.findById(id);
             return ResponseEntity.ok().body(autor);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
     }
 
 }

@@ -53,8 +53,8 @@ public class LivroControllerTest {
     @Test
     public void testListarLivros() {
 
-        when(livroService.ListarLivros()).thenReturn(livros);
-        ResponseEntity<List<LivroResponseDTO>> response = livroController.ListarLivros();
+        when(livroService.findAll()).thenReturn(livros);
+        ResponseEntity<List<LivroResponseDTO>> response = livroController.findAll();
 
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().size());
@@ -63,37 +63,37 @@ public class LivroControllerTest {
     @Test
     public void testCriarLivro() {
 
-        when(livroService.Criar(livro)).thenReturn(livro);
-        ResponseEntity<String> response = livroController.criar(livro);
+        when(livroService.create(livro)).thenReturn(livro);
+        ResponseEntity<String> response = livroController.create(livro);
         assertEquals("Livro criado com sucesso!", response.getBody());
     }
 
     @Test
     public void testAtualizarLivro() {
 
-        when(livroService.Atualizar(1L, livro)).thenReturn(livro);
-        ResponseEntity<String> response = livroController.atualizar(1L, livro);
+        when(livroService.update(1L, livro)).thenReturn(livro);
+        ResponseEntity<String> response = livroController.update(1L, livro);
         assertEquals("Livro atualizado com sucesso!", response.getBody());
     }
 
     @Test
     public void testDeletarLivro() {
-        ResponseEntity<String> response = livroController.Deletar(1L);
+        ResponseEntity<String> response = livroController.delete(1L);
         assertEquals("Livro deletado com sucesso!", response.getBody());
     }
 
     @Test
     public void testFindById() {
-        when(livroService.FindById(1L)).thenReturn(livros.get(0));
-        ResponseEntity<LivroResponseDTO> response = livroController.FindById(1L);
+        when(livroService.findById(1L)).thenReturn(livros.get(0));
+        ResponseEntity<LivroResponseDTO> response = livroController.findById(1L);
         assertNotNull(response.getBody());
         assertEquals("Livro 1", response.getBody().getTitulo());
     }
 
     @Test
     public void testFindByTitulo() {
-        when(livroService.findByTitulo("Livro 1")).thenReturn(livros.get(0));
-        ResponseEntity<LivroResponseDTO> response = livroController.findByTitulo("Livro 1");
+        when(livroService.findByTitulo("Livro 8")).thenReturn(livros.get(0));
+        ResponseEntity<LivroResponseDTO> response = livroController.findByTitulo("Livro 8");
         assertNotNull(response.getBody());
         assertEquals("Livro 1", response.getBody().getTitulo());
     }

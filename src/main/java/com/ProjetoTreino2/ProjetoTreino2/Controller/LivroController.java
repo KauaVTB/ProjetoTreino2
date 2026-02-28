@@ -2,13 +2,18 @@ package com.ProjetoTreino2.ProjetoTreino2.Controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.ProjetoTreino2.ProjetoTreino2.Exceptions.LivroNotFoundException;
 import com.ProjetoTreino2.ProjetoTreino2.Services.LivroService;
 import com.ProjetoTreino2.ProjetoTreino2.dto.LivroDTO;
 import com.ProjetoTreino2.ProjetoTreino2.dto.LivroResponseDTO;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,88 +25,94 @@ import org.springframework.web.bind.annotation.GetMapping;
 @RequestMapping("/api/livros")
 public class LivroController {
 
-    @Autowired
-    LivroService livroService;
+    
+    private final LivroService livroService;
 
-    @PostMapping("/criar")
-    public ResponseEntity<String> criar(@RequestBody LivroDTO dto) {
-        try {
-            livroService.Criar(dto);
-            return ResponseEntity.ok().body("Livro criado com sucesso!");
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao criar livro: " + e.getMessage());
-        }
-
+    public LivroController(LivroService livroService) {
+        this.livroService = livroService;
     }
 
-    @PutMapping("/atualizar/{id}")
-    public ResponseEntity<String> atualizar(@PathVariable Long id, @RequestBody LivroDTO dto) {
-        try {
-            livroService.Atualizar(id, dto);
+    @PostMapping("/create")
+    public ResponseEntity<String> create(@Valid @RequestBody LivroDTO dto) {
+        
+            livroService.create(dto);
+            return ResponseEntity.ok().body("Livro criado com sucesso!");}
+
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> update(@Valid @PathVariable Long id, @RequestBody LivroDTO dto) {
+            livroService.update(id, dto);
             return ResponseEntity.ok().body("Livro atualizado com sucesso!");
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao atualizar livro: " + e.getMessage());
-        }
+        
     }
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<LivroResponseDTO>> ListarLivros() {
+    @GetMapping("/findAll")
+    public ResponseEntity<List<LivroResponseDTO>> findAll() {
         try {
-            return ResponseEntity.ok(livroService.ListarLivros());
+            return ResponseEntity.ok(livroService.findAll());
         } catch (Exception e) {
             throw new RuntimeException("Erro ao listar livros: " + e.getMessage());
         }
 
     }
 
-    @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> Deletar(@PathVariable Long id) {
-        try {
-            livroService.Deletar(id);
-            return ResponseEntity.ok().body("Livro deletado com sucesso!");
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao deletar livro: " + e.getMessage());
-        }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        
+                try {
+                    livroService.delete(id);
+                    return ResponseEntity.ok().body("Livro deletado com sucesso!");
+                } catch (Exception e) {
+                    return ResponseEntity.status(500).body("Erro ao deletar livro: " + e.getMessage());
+                }
+        
     }
 
     @GetMapping("/findById/{id}")
-    public ResponseEntity<LivroResponseDTO> FindById(@PathVariable Long id) {
-        try {
-            LivroResponseDTO livro = livroService.FindById(id);
+    public ResponseEntity<LivroResponseDTO> findById(@PathVariable Long id) {
+    
+            LivroResponseDTO livro = livroService.findById(id);
             return ResponseEntity.ok(livro);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao encontrar livro: " + e.getMessage());
-        }
     }
 
     @GetMapping("/findByTitulo/{titulo}")
     public ResponseEntity<LivroResponseDTO> findByTitulo(@PathVariable String titulo) {
-        try {
+
             LivroResponseDTO livro = livroService.findByTitulo(titulo);
             return ResponseEntity.ok(livro);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao encontrar livro por título: " + e.getMessage());
-        }
+       
     }
 
     @GetMapping("/findByAnoPublicacao/{anoPublicacao}")
     public ResponseEntity<List<LivroResponseDTO>> findByAnoPublicacao(@PathVariable int anoPublicacao) {
-        try {
+
             List<LivroResponseDTO> livros = livroService.findByAnoPublicacao(anoPublicacao);
             return ResponseEntity.ok(livros);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao encontrar livros por ano de publicação: " + e.getMessage());
-        }
+       
     }
 
     @GetMapping("/findByAnoPublicacaoMaiorQue/{anoPublicacao}")
     public ResponseEntity<List<LivroResponseDTO>> findByAnoPublicacaoMaiorQue(@PathVariable Integer anoPublicacao) {
-        try {
+        
             List<LivroResponseDTO> livros = livroService.findByAnoPublicacaoMaiorQue(anoPublicacao);
             return ResponseEntity.ok(livros);
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao encontrar livros por ano de publicação maior que: " + e.getMessage());
-        }
+        
+    }
+
+    @GetMapping("/findByAnoPublicacaoMenorQue/{anoPublicacao}")
+    public ResponseEntity<List<LivroResponseDTO>> findByAnoPublicacaoMenorQue(@PathVariable Integer anoPublicacao) {
+        
+            List<LivroResponseDTO> livros = livroService.findByAnoPublicacaoMenorQue(anoPublicacao);
+            return ResponseEntity.ok(livros);
+        
+    }
+
+    @GetMapping("/findByAutor/{id}")
+    public ResponseEntity<List<LivroResponseDTO>> findByAutor(@PathVariable long id) {
+        
+            List<LivroResponseDTO> livros = livroService.findByAutor(id);
+            return ResponseEntity.ok(livros);
+        
     }
 
 }

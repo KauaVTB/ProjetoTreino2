@@ -1,6 +1,7 @@
 package com.ProjetoTreino2.ProjetoTreino2.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,11 +13,11 @@ public interface LivroRepository
         extends
         org.springframework.data.jpa.repository.JpaRepository<com.ProjetoTreino2.ProjetoTreino2.Entities.Livro, Long> {
 
-    Livro findByTitulo(String titulo);
+    Optional<Livro> findByTitulo(String titulo);
 
-    Livro findByAutor(long id);
+    Optional<List<Livro>> findByAutorId(long id);
 
-    List<Livro> findByAnoPublicacao(int anoPublicacao);
+    Optional<List<Livro>> findByAnoPublicacao(int anoPublicacao);
 
     @Query("SELECT l FROM Livro l WHERE l.anoPublicacao > :anoPublicacao")
     List<Livro> findByAnoPublicacaoMaiorQue(Integer anoPublicacao);

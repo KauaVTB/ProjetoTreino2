@@ -2,58 +2,64 @@ package com.ProjetoTreino2.ProjetoTreino2.Services;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import com.ProjetoTreino2.ProjetoTreino2.dto.AutorDTO;
 import com.ProjetoTreino2.ProjetoTreino2.Repository.AutorRepository;
+import com.ProjetoTreino2.ProjetoTreino2.Repository.LivroRepository;
 import com.ProjetoTreino2.ProjetoTreino2.Entities.Autor;
+import com.ProjetoTreino2.ProjetoTreino2.Exceptions.AutorNotFoundException;
 import com.ProjetoTreino2.ProjetoTreino2.dto.AutorResponseDTO;
 
 @Service
 public class AutorService {
-        @Autowired
-        AutorRepository autorRepository;
-
-        public AutorResponseDTO findById(Long id) {
-                return autorRepository.findById(id)
-                                .stream()
-                                .map(autor -> new AutorResponseDTO(
-                                                autor.getId(),
-                                                autor.getNome(),
-                                                autor.getLivros().stream().map(livro -> livro.getTitulo()).toList()))
-                                .findFirst()
-                                .orElse(null);
+        
+        private final AutorRepository autorRepository;
+        private final LivroRepository livroRepository;
+        public AutorService(AutorRepository autorRepository, LivroRepository livroRepository) {
+                this.autorRepository = autorRepository;
+                this.livroRepository = livroRepository;
         }
 
-        public AutorDTO CriarAutor(@RequestBody AutorDTO autorDTO) {
-                Autor autor = new Autor(
-                                autorDTO.getId(),
-                                autorDTO.getNome(),
-                                null);
+        public AutorResponseDTO findById(Long id) {
+                Autor autor = autorRepository.findById(id).orElseThrow(() -> new AutorNotFoundException());
+                return new AutorResponseDTO(
+                                autor.getId(),
+                                autor.getNome(),
+                                autor.getLivros().stream().map(livro -> livro.getTitulo()).toList());
+                                
+        }
+
+        public AutorDTO create(AutorDTO autorDTO) {
+                Autor autor = new Autor();
+                autor.setId(autorDTO.getId());
+                autor.setNome(autorDTO.getNome());
+                if (autorDTO.getLivros() != null && !autorDTO.getLivros().isEmpty()) {
+            autor.setLivros(
+                    livroRepository.findAllById(autorDTO.getLivros()));
+        } 
+                autorRepository.save(autor);
                 return new AutorDTO(
                                 autor.getId(),
                                 autor.getNome(),
                                 autor.getLivros().stream().map(livro -> livro.getId()).toList());
         }
 
-        public AutorDTO Atualizar(@RequestBody AutorDTO autorDTO, Long id) {
-                Autor autor = autorRepository.findById(id).orElse(null);
-                if (autor != null) {
+        public AutorDTO update(AutorDTO autorDTO, Long id) {
+                Autor autor = autorRepository.findById(id).orElseThrow(() -> new AutorNotFoundException());
                         autor.setNome(autorDTO.getNome());
                         return new AutorDTO(
                                         autor.getId(),
                                         autor.getNome(),
                                         autor.getLivros().stream().map(livro -> livro.getId()).toList());
-                }
-                return null;
+                
         }
 
-        public void Deletar(Long id) {
+        public void delete(Long id) {
+                autorRepository.findById(id).orElseThrow(() -> new AutorNotFoundException());
                 autorRepository.deleteById(id);
         }
 
-        public List<AutorResponseDTO> listarAutores() {
+        public List<AutorResponseDTO> findAll() {
 
                 return autorRepository.findAll()
                                 .stream()
