@@ -33,12 +33,12 @@ class ClienteControllerTest {
     @BeforeEach
     void setUp() {
         clienteDTO = new ClienteDTO();
-        clienteDTO.setNome("João Silva");
+        clienteDTO.setNome("Joao Silva");
         clienteDTO.setEmail("joao@email.com");
 
         clienteResponseDTO = new ClienteResponseDTO();
         clienteResponseDTO.setId(1L);
-        clienteResponseDTO.setNome("João Silva");
+        clienteResponseDTO.setNome("Joao Silva");
         clienteResponseDTO.setEmail("joao@email.com");
     }
 
@@ -52,11 +52,8 @@ class ClienteControllerTest {
 
     @Test
     void testCreate_Error() {
-        doThrow(new RuntimeException("Erro na criação")).when(clienteService).create(any());
-
-        ResponseEntity<String> response = clienteController.create(clienteDTO);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains("Erro na criação"));
+        doThrow(new RuntimeException("Erro na criacao")).when(clienteService).create(any());
+        assertThrows(RuntimeException.class, () -> clienteController.create(clienteDTO));
     }
 
     @Test
@@ -69,10 +66,8 @@ class ClienteControllerTest {
 
     @Test
     void testAtualizar_Error() {
-        doThrow(new RuntimeException("Erro na atualização")).when(clienteService).update(any(), anyLong());
-        ResponseEntity<String> response = clienteController.update(clienteDTO, 1L);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains("Erro ao atualizar cliente"));
+        doThrow(new RuntimeException("Erro na atualizacao")).when(clienteService).update(any(), anyLong());
+        assertThrows(RuntimeException.class, () -> clienteController.update(clienteDTO, 1L));
     }
 
     @Test
@@ -104,9 +99,7 @@ class ClienteControllerTest {
     @Test
     void testDeletar_Error() {
         doThrow(new RuntimeException("Erro ao deletar")).when(clienteService).delete(anyLong());
-        ResponseEntity<String> response = clienteController.delete(1L);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains("Erro ao deletar cliente"));
+        assertThrows(RuntimeException.class, () -> clienteController.delete(1L));
     }
 
     @Test
@@ -114,15 +107,13 @@ class ClienteControllerTest {
         when(clienteService.findById(1L)).thenReturn(clienteResponseDTO);
         ResponseEntity<ClienteResponseDTO> response = clienteController.findById(1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("João Silva", response.getBody().getNome());
+        assertEquals("Joao Silva", response.getBody().getNome());
         verify(clienteService, times(1)).findById(1L);
     }
 
     @Test
     void testFindById_Error() {
-        when(clienteService.findById(anyLong())).thenThrow(new RuntimeException("Cliente não encontrado"));
-        ResponseEntity<ClienteResponseDTO> response = clienteController.findById(999L);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertNull(response.getBody());
+        when(clienteService.findById(anyLong())).thenThrow(new RuntimeException("Cliente nao encontrado"));
+        assertThrows(RuntimeException.class, () -> clienteController.findById(999L));
     }
 }

@@ -10,4 +10,5 @@ public interface ClienteRepository extends org.springframework.data.jpa.reposito
     Optional<Cliente> findById(Long id);
 
     List<Cliente> findAll();
+    Optional<Cliente> findByNome(String nome);
 }

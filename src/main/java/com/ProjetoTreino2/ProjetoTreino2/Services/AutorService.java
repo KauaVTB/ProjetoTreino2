@@ -1,5 +1,6 @@
 package com.ProjetoTreino2.ProjetoTreino2.Services;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -7,7 +8,9 @@ import com.ProjetoTreino2.ProjetoTreino2.dto.AutorDTO;
 import com.ProjetoTreino2.ProjetoTreino2.Repository.AutorRepository;
 import com.ProjetoTreino2.ProjetoTreino2.Repository.LivroRepository;
 import com.ProjetoTreino2.ProjetoTreino2.Entities.Autor;
+import com.ProjetoTreino2.ProjetoTreino2.Entities.Livro;
 import com.ProjetoTreino2.ProjetoTreino2.Exceptions.AutorNotFoundException;
+import com.ProjetoTreino2.ProjetoTreino2.Exceptions.ClienteNotFoundException;
 import com.ProjetoTreino2.ProjetoTreino2.dto.AutorResponseDTO;
 
 @Service
@@ -26,7 +29,7 @@ public class AutorService {
                 return new AutorResponseDTO(
                                 autor.getId(),
                                 autor.getNome(),
-                                autor.getLivros().stream().map(livro -> livro.getTitulo()).toList());
+                                mapLivroTitulos(autor));
 
         }
 
@@ -34,24 +37,27 @@ public class AutorService {
                 Autor autor = new Autor();
                 autor.setId(autorDTO.getId());
                 autor.setNome(autorDTO.getNome());
-                if (autorDTO.getLivros() != null && !autorDTO.getLivros().isEmpty()) {
-                        autor.setLivros(
-                                        livroRepository.findAllById(autorDTO.getLivros()));
+                if (autorDTO.getLivros() != null) {
+                        autor.setLivros(livroRepository.findAllById(autorDTO.getLivros()));
                 }
                 autorRepository.save(autor);
                 return new AutorDTO(
                                 autor.getId(),
                                 autor.getNome(),
-                                autor.getLivros().stream().map(livro -> livro.getId()).toList());
+                                mapLivroIds(autor));
         }
 
         public AutorDTO update(AutorDTO autorDTO, Long id) {
                 Autor autor = autorRepository.findById(id).orElseThrow(() -> new AutorNotFoundException());
                 autor.setNome(autorDTO.getNome());
+                if (autorDTO.getLivros() != null) {
+                        autor.setLivros(livroRepository.findAllById(autorDTO.getLivros()));
+                }
+                autorRepository.save(autor);
                 return new AutorDTO(
                                 autor.getId(),
                                 autor.getNome(),
-                                autor.getLivros().stream().map(livro -> livro.getId()).toList());
+                                mapLivroIds(autor));
 
         }
 
@@ -67,7 +73,34 @@ public class AutorService {
                                 .map(autor -> new AutorResponseDTO(
                                                 autor.getId(),
                                                 autor.getNome(),
-                                                autor.getLivros().stream().map(livro -> livro.getTitulo()).toList()))
+                                                mapLivroTitulos(autor)))
                                 .toList();
+        }
+
+        public AutorResponseDTO findByNome(String nome){
+                Autor autor = autorRepository.findByNome(nome).orElseThrow(()-> new ClienteNotFoundException());
+                
+                return new AutorResponseDTO(
+                        autor.getId(),
+                        autor.getNome(),
+                        mapLivroTitulos(autor)
+                );
+                
+        }
+
+        private List<String> mapLivroTitulos(Autor autor) {
+                List<Livro> livros = autor.getLivros();
+                if (livros == null) {
+                        return Collections.emptyList();
+                }
+                return livros.stream().map(Livro::getTitulo).toList();
+        }
+
+        private List<Long> mapLivroIds(Autor autor) {
+                List<Livro> livros = autor.getLivros();
+                if (livros == null) {
+                        return Collections.emptyList();
+                }
+                return livros.stream().map(Livro::getId).toList();
         }
 }

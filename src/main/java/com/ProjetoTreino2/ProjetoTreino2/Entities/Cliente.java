@@ -1,5 +1,6 @@
 package com.ProjetoTreino2.ProjetoTreino2.Entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -25,5 +26,6 @@ public class Cliente {
     private String email;
 
     @ManyToMany(mappedBy = "clientes")
-    private List<Livro> livros;
+    private List<Livro> livros = new ArrayList<>();
 }
+

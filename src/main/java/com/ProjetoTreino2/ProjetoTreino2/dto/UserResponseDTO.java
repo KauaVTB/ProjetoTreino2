@@ -1,18 +1,18 @@
 package com.ProjetoTreino2.ProjetoTreino2.dto;
 
-import java.util.List;
+import com.ProjetoTreino2.ProjetoTreino2.Entities.UserRole;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class AutorResponseDTO {
+@Getter
+@Setter
+public class UserResponseDTO {
     private Long id;
     private String nome;
-    private List<String> livros;
+    private UserRole cargo;
 }

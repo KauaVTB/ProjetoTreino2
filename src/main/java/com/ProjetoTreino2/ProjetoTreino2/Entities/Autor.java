@@ -1,5 +1,7 @@
 package com.ProjetoTreino2.ProjetoTreino2.Entities;
 
+import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -25,6 +27,7 @@ public class Autor {
     private String nome;
 
     @OneToMany(mappedBy = "autor")
-    private List<Livro> livros;
+    private List<Livro> livros = new ArrayList<>();
 
 }
+

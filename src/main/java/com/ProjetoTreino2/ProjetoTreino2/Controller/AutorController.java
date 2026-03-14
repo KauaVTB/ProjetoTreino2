@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.ProjetoTreino2.ProjetoTreino2.dto.AutorResponseDTO;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/autores")
@@ -70,5 +72,12 @@ public class AutorController {
         AutorResponseDTO autor = autorService.findById(id);
         return ResponseEntity.ok().body(autor);
     }
+
+    @GetMapping("/findByNome/{nome}")
+    public ResponseEntity<AutorResponseDTO> findByNome(@RequestParam String nome) {
+        AutorResponseDTO autor = autorService.findByNome(nome);
+        return ResponseEntity.ok().body(autor);
+    }
+    
 
 }

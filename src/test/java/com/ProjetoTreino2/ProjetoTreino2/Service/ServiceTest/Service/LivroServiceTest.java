@@ -169,6 +169,16 @@ class LivroServiceTest {
 
     @Test
     void testDeletar() {
+        Autor autor = new Autor(1L, "José Saramago", null);
+        Cliente cliente = new Cliente(1L, "João", "email", null);
+
+        Livro livro = new Livro();
+        livro.setId(1L);
+        livro.setTitulo("Ensaio sobre a Cegueira");
+        livro.setAutor(autor);
+        livro.setAnoPublicacao(1995);
+        livro.setClientes(List.of(cliente));
+        when(livroRepository.findById(1L)).thenReturn(Optional.of(livro));
         livroService.delete(1L);
         verify(livroRepository, times(1)).deleteById(1L);
     }

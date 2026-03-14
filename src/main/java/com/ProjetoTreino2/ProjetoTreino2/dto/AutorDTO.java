@@ -1,5 +1,8 @@
 package com.ProjetoTreino2.ProjetoTreino2.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -11,12 +14,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class AutorDTO {
     private Long id;
 
     @Pattern(regexp = "^[A-Za-zÀ-ÿ ]+$", message = "Nome deve conter apenas letras")
     @NotBlank(message = "O nome do autor é obrigatório")
     private String nome;
-    private java.util.List<Long> livros;
+    private List<Long> livros = new ArrayList<>();
 }
+

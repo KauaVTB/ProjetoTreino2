@@ -3,6 +3,7 @@ package com.ProjetoTreino2.ProjetoTreino2.Services;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
 import org.apache.tomcat.jni.Library;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,12 +25,17 @@ public class TokenService {
     public String generateToken(User user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
-            String token = com.auth0.jwt.JWT.create()
+
+            List<String> roles = user.getAuthorities().stream()
+                    .map(authority -> authority.getAuthority())
+                    .toList();
+
+            return JWT.create()
                     .withIssuer("LibraryAPI")
                     .withSubject(user.getLogin())
+                    .withClaim("roles", roles)
                     .withExpiresAt(getExpirationTime())
                     .sign(algorithm);
-            return token;
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Error generating token", exception);
         }

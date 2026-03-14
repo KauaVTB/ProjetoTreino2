@@ -1,5 +1,6 @@
 package com.ProjetoTreino2.ProjetoTreino2.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
@@ -23,5 +24,5 @@ public class ClienteDTO {
     @NotBlank(message = "O email do cliente é obrigatório")
     private String email;
 
-    private List<Long> livro_id;
+    private List<Long> livro_id = new ArrayList<>();
 }
